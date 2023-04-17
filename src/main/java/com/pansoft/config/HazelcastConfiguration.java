@@ -19,7 +19,11 @@ public class HazelcastConfiguration {
 
     @Bean
     public Config hazelCastConfig() {
+        ManagementCenterConfig managementCenterConfig = new ManagementCenterConfig();
+        managementCenterConfig.setConsoleEnabled(true);
+        managementCenterConfig.addTrustedInterface("192.168.212.127");
         Config config = new Config();
+        config.setManagementCenterConfig(managementCenterConfig);
         //设置一个名为hazelcast-instance的实体对象
         config.setInstanceName("hazelcast-instance")
                 .addMapConfig(new MapConfig()
