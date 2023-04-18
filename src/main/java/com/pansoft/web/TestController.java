@@ -1,8 +1,12 @@
 package com.pansoft.web;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.alibaba.fastjson2.JSON;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * 类描述：
@@ -13,9 +17,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/test")
 public class TestController {
 
-    @GetMapping
-    public String test(){
-        return "success";
+    @Autowired
+    private HazelcastInstance hazelcastInstance;
+
+    @GetMapping("/get")
+    public String test() {
+        IMap<Object, Object> map = hazelcastInstance.getMap("lvzp-testMap");
+        return JSON.toJSONString(map);
     }
 
+    @PostMapping("/put")
+    public String put(@RequestBody Map<String, Object> params) {
+        IMap<Object, Object> map = hazelcastInstance.getMap("lvzp-testMap");
+        map.putAll(params);
+        return "success";
+    }
 }

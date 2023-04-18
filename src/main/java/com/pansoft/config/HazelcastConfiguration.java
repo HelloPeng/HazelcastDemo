@@ -9,6 +9,8 @@ import com.hazelcast.topic.ITopic;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.*;
+
 /**
  * 类描述：
  * 创建人：LvZhenPeng
@@ -17,33 +19,45 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class HazelcastConfiguration {
 
-    @Bean
+   /* @Bean
     public Config hazelCastConfig() {
+        List<String> memberList = new ArrayList<>();
+        memberList.add("172.17.60.22");
         Config config = new Config();
-        //设置一个名为hazelcast-instance的实体对象
+        NetworkConfig networkConfig = new NetworkConfig();
+        networkConfig.setInterfaces(new InterfacesConfig().setInterfaces(memberList));
+        networkConfig.setPort(20400);
+        networkConfig.setPortAutoIncrement(true);
+        networkConfig.setPortCount(100);
+        networkConfig.setOutboundPorts(Collections.singletonList(0));
+        networkConfig.setJoin(new JoinConfig()
+                .setMulticastConfig(new MulticastConfig().setEnabled(false))
+                .setTcpIpConfig(new TcpIpConfig().setEnabled(true).setMembers(memberList).setRequiredMember(null).setConnectionTimeoutSeconds(5)));
+        Map<String, ExecutorConfig> map = new HashMap<>();
+        map.put("default", new ExecutorConfig().setPoolSize(16).setQueueCapacity(0));
+        List<EntryListenerConfig> entryListenerConfigList = new ArrayList<>();
+        EntryListenerConfig entryListenerConfig = new EntryListenerConfig();
+        entryListenerConfig.setClassName("com.palm.vert.cluster.listener.ClusterCacheListener");
+        entryListenerConfigList.add(entryListenerConfig);
         config.setInstanceName("hazelcast-instance")
-                .addMapConfig(new MapConfig()
-                        .setName("configuration")
-                        // Map中存储条目的最大值[0~Integer.MAX_VALUE]。默认值为10000。
-                        .setEvictionConfig(new EvictionConfig().setSize(Integer.MAX_VALUE)
-                                //数据释放策略[NONE|LRU|LFU]。这是Map作为缓存的一个参数，用于指定数据的回收算法。默认为NONE。LRU：“最近最少使用“策略。
-                                .setEvictionPolicy(EvictionPolicy.LRU))
-                        //数据留存时间[0~Integer.MAX_VALUE]。缓存相关参数，单位秒，默认为0。
-                        .setTimeToLiveSeconds(-1));
+                .addMapConfig(new MapConfig().setName("configuration").setEvictionConfig(new EvictionConfig().setSize(200).setMaxSizePolicy(MaxSizePolicy.FREE_HEAP_SIZE)
+                                .setEvictionPolicy(EvictionPolicy.LFU))
+                        .setTimeToLiveSeconds(-1).setEntryListenerConfigs(entryListenerConfigList))
+                .setManagementCenterConfig(new ManagementCenterConfig().setConsoleEnabled(false))
+                .setNetworkConfig(networkConfig)
+                .setPartitionGroupConfig(new PartitionGroupConfig().setEnabled(false))
+                .setExecutorConfigs(map);
+        return config;
+    }*/
+
+    @Bean
+    public Config hazelcastConfig() {
+        Config config = new Config();
+        config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+        config.getNetworkConfig().getJoin().getEurekaConfig()
+                .setEnabled(true)
+                .setProperty("self-registration", "true")
+                .setProperty("namespace", "hazelcast");
         return config;
     }
-   /* @Bean
-    public HazelcastInstance hazelcastInstance(Config config) {
-        HazelcastInstance hzInstance = Hazelcast.newHazelcastInstance(config);
-        //分布式map监听
-        IMap<Object, Object> imap = hzInstance.getMap("hazelcastMap");
-        imap.addLocalEntryListener(new MapListener());
-        //拦截器（没写内容）
-        imap.addInterceptor(new IMapInterceptor());
-        //发布/订阅模式
-        ITopic<String> topic = hzInstance.getTopic("hazelcastTopic");
-        topic.addMessageListener(new TopicListener());
-
-        return hzInstance;
-    }*/
 }
