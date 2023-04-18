@@ -72,7 +72,7 @@ public class HazelcastConfiguration {
         config.setProperty("hazelcast.discovery.enabled", "true");
 
         DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(new NacosDiscoveryStrategyFactory())
-                .addProperty(NacosDiscoveryProperties.SERVER_ADDR.key(), "192.168.249.5:10038/")
+                .addProperty(NacosDiscoveryProperties.SERVER_ADDR.key(), "192.168.249.5:10038")
                 .addProperty(NacosDiscoveryProperties.APPLICATION_NAME.key(), "nacos")
                 .addProperty(NacosDiscoveryProperties.NAMESPACE.key(), "nacos")
                 .addProperty(NacosDiscoveryProperties.CLUSTER_NAME.key(), "nacos");
