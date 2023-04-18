@@ -1,10 +1,14 @@
 package com.pansoft.config;
 
+import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import com.hazelcast.map.listener.MapListener;
+import com.hazelcast.nacos.NacosDiscoveryProperties;
+import com.hazelcast.nacos.NacosDiscoveryStrategyFactory;
 import com.hazelcast.topic.ITopic;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +54,7 @@ public class HazelcastConfiguration {
         return config;
     }*/
 
-    @Bean
+/*    @Bean
     public Config hazelcastConfig() {
         Config config = new Config();
         config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
@@ -59,5 +63,33 @@ public class HazelcastConfiguration {
                 .setProperty("self-registration", "true")
                 .setProperty("namespace", "hazelcast");
         return config;
+    }*/
+
+    @Bean
+    public HazelcastInstance hazelcastConfig() {
+/*        ClientConfig config = new ClientConfig();
+
+        config.setProperty("hazelcast.discovery.enabled", "true");
+
+        DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(new NacosDiscoveryStrategyFactory())
+                .addProperty(NacosDiscoveryProperties.SERVER_ADDR.key(), "192.168.212.127:8888")
+                .addProperty(NacosDiscoveryProperties.APPLICATION_NAME.key(), "nacos-test")
+                .addProperty(NacosDiscoveryProperties.NAMESPACE.key(), "nacos-test")
+                .addProperty(NacosDiscoveryProperties.CLUSTER_NAME.key(), "nacos-test");
+        config.getNetworkConfig().getDiscoveryConfig().addDiscoveryStrategyConfig(discoveryStrategyConfig);
+
+        return HazelcastClient.newHazelcastClient(config);*/
+       Config config = new Config();
+        config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+        config.setProperty("hazelcast.discovery.enabled", "true");
+
+        DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(new NacosDiscoveryStrategyFactory())
+                .addProperty(NacosDiscoveryProperties.SERVER_ADDR.key(), "192.168.212.127:8888")
+                .addProperty(NacosDiscoveryProperties.APPLICATION_NAME.key(), "nacos")
+                .addProperty(NacosDiscoveryProperties.NAMESPACE.key(), "nacos")
+                .addProperty(NacosDiscoveryProperties.CLUSTER_NAME.key(), "nacos");
+        config.getNetworkConfig().getJoin().getDiscoveryConfig().addDiscoveryStrategyConfig(discoveryStrategyConfig);
+
+        return Hazelcast.newHazelcastInstance(config);/* */
     }
 }
