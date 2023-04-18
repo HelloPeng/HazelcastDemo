@@ -67,29 +67,17 @@ public class HazelcastConfiguration {
 
     @Bean
     public HazelcastInstance hazelcastConfig() {
-/*        ClientConfig config = new ClientConfig();
-
-        config.setProperty("hazelcast.discovery.enabled", "true");
-
-        DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(new NacosDiscoveryStrategyFactory())
-                .addProperty(NacosDiscoveryProperties.SERVER_ADDR.key(), "192.168.212.127:8888")
-                .addProperty(NacosDiscoveryProperties.APPLICATION_NAME.key(), "nacos-test")
-                .addProperty(NacosDiscoveryProperties.NAMESPACE.key(), "nacos-test")
-                .addProperty(NacosDiscoveryProperties.CLUSTER_NAME.key(), "nacos-test");
-        config.getNetworkConfig().getDiscoveryConfig().addDiscoveryStrategyConfig(discoveryStrategyConfig);
-
-        return HazelcastClient.newHazelcastClient(config);*/
-       Config config = new Config();
+        Config config = new Config();
         config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
         config.setProperty("hazelcast.discovery.enabled", "true");
 
         DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(new NacosDiscoveryStrategyFactory())
-                .addProperty(NacosDiscoveryProperties.SERVER_ADDR.key(), "192.168.212.127:8888")
+                .addProperty(NacosDiscoveryProperties.SERVER_ADDR.key(), "192.168.249.5:10038/")
                 .addProperty(NacosDiscoveryProperties.APPLICATION_NAME.key(), "nacos")
                 .addProperty(NacosDiscoveryProperties.NAMESPACE.key(), "nacos")
                 .addProperty(NacosDiscoveryProperties.CLUSTER_NAME.key(), "nacos");
         config.getNetworkConfig().getJoin().getDiscoveryConfig().addDiscoveryStrategyConfig(discoveryStrategyConfig);
 
-        return Hazelcast.newHazelcastInstance(config);/* */
+        return Hazelcast.newHazelcastInstance(config);
     }
 }
