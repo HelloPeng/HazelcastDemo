@@ -10,6 +10,7 @@ import com.hazelcast.map.listener.MapListener;
 import com.hazelcast.nacos.NacosDiscoveryProperties;
 import com.hazelcast.nacos.NacosDiscoveryStrategyFactory;
 import com.hazelcast.topic.ITopic;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,10 +24,30 @@ import java.util.*;
 @Configuration
 public class HazelcastConfiguration {
 
-
+    /**
+     * 配置初始化Config
+     * @return
+     */
     @Bean
-    public HazelcastInstance hazelcastConfig() {
+    public Config hazelCastConfig() {
         Config config = new Config();
+        config.setInstanceName("hazelcast-instance")
+                .addMapConfig(new MapConfig().setName("configuration").setEvictionConfig(new EvictionConfig().setMaxSizePolicy(MaxSizePolicy.FREE_HEAP_SIZE)
+                                .setEvictionPolicy(EvictionPolicy.LFU))
+                        .setTimeToLiveSeconds(-1))
+                .setManagementCenterConfig(new ManagementCenterConfig().setConsoleEnabled(false))
+                .setPartitionGroupConfig(new PartitionGroupConfig().setEnabled(false));
+        return config;
+    }
+
+    /**
+     * 初始化HazelcastInstance
+     * @param config
+     * @return
+     */
+    @Bean
+    @ConditionalOnBean(Config.class)
+    public HazelcastInstance hazelcastInstance(Config config) {
         config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
         config.setProperty("hazelcast.discovery.enabled", "true");
 
